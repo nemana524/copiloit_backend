@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: llama-index-graph-stores-nebula
+Version: 0.4.2
+Summary: llama-index graph stores nebula integration
+License: Apache-2.0
+Author: Your Name
+Author-email: you@example.com
+Requires-Python: >=3.9,<4.0
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Dist: llama-index-core (>=0.12.0,<0.13.0)
+Requires-Dist: nebula3-python (>=3.8.0,<4.0.0)
+Description-Content-Type: text/markdown
+
+# LlamaIndex Graph Stores Integration: Nebula
+
