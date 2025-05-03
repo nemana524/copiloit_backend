@@ -13,3 +13,6 @@ uploads
 backend.log
 fastapi.log
 milvus_demo.db
+
+# Ignore large WAL files
+milvus-docker/volumes/etcd/member/wal/0000000000000000-0000000000000000.wal
