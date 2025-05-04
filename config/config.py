@@ -1,11 +1,37 @@
 import os
 from dotenv import load_dotenv
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Load environment variables from .env file in development
 load_dotenv()
+
+# Log environment and variables for debugging (only key names, not values)
+if os.environ.get("RENDER"):
+    logger.info("Running on Render.com")
+    logger.info(f"Environment variables available: {', '.join(k for k in os.environ.keys() if not k.startswith('_'))}")
 
 SEED = 42
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/dbname")
+# Critical environment variables with defaults for development only
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    logger.warning("DATABASE_URL not found in environment, using default for development")
+    DATABASE_URL = "postgresql://user:password@localhost/dbname"
+    
+# Log database connection info (without credentials)
+if DATABASE_URL:
+    # Extract and log just the host part for debugging
+    db_parts = DATABASE_URL.split("@")
+    if len(db_parts) > 1:
+        db_host = db_parts[1].split("/")[0]
+        logger.info(f"Database host: {db_host}")
+    else:
+        logger.info("Using local database")
+
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your_jwt_secret_here")
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = int(os.getenv("ACCESS_TOKEN_EXPIRE_HOURS", "30"))
