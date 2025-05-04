@@ -2,7 +2,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, create_eng
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
 from config.config import DATABASE_URL
+import os
 
+# Create engine
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -38,8 +40,10 @@ class FileRecord(Base):
     upload_date = Column(DateTime, default=datetime.utcnow)
     last_modified = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Only create tables if we're not in production mode
+# This allows Render to set up the proper environment variables first
+if os.environ.get('ENV') != 'production':
+    Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = SessionLocal()
@@ -47,3 +51,7 @@ def get_db():
         yield db
     finally:
         db.close()
+        
+def initialize_db():
+    """Initialize database tables if they don't exist"""
+    Base.metadata.create_all(bind=engine)

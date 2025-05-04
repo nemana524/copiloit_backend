@@ -5,13 +5,14 @@ nest_asyncio.apply()
 import httpx
 from typing import List, AsyncGenerator, Dict, Any
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import FastAPI, WebSocket, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from config.config import SEED, OPENAI_API_KEY
-from databases.database import get_db
+from databases.database import get_db, initialize_db
 from auth import get_current_user, UserOut
 from routes.websockets import websocket_auth_dialogue, websocket_chat
 from routes.repositories import router as repositories_router
@@ -104,6 +105,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[dict, None]:
     Lifespan context manager to handle startup and shutdown events.
     """
     # Startup tasks
+    logger.info("Initializing database...")
+    try:
+        # Set ENV to 'production' if running on Render
+        if "RENDER" in os.environ:
+            os.environ["ENV"] = "production"
+            
+        # Initialize database tables
+        initialize_db()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Error initializing database: {e}")
+        
     health_check_task = asyncio.create_task(continuous_model_health_checks())
     
     try:
